@@ -42,6 +42,12 @@ export default function StudentDashboard({ view = 'default' }) {
       console.log('Active Feedback:', forms);
       
       setActiveFeedback(forms || []);
+      if (Array.isArray(forms)) {
+        const noMatch = forms.filter(f => f && f.sectionMatch === false);
+        if (noMatch.length > 0) {
+          console.warn('⚠️ StudentDashboard: safety fallback forms (no section match):', noMatch.map(f => f.title));
+        }
+      }
       
       // Calculate stats
       const pending = forms ? forms.filter(f => !f.submitted).length : 0;
@@ -153,7 +159,7 @@ export default function StudentDashboard({ view = 'default' }) {
 
   // Pending Feedback view
   if (view === 'pending') {
-    const pendingForms = activeFeedback.filter(f => !f.submitted);
+  const pendingForms = activeFeedback.filter(f => !f.submitted);
     
     return (
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4 }}>

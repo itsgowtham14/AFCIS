@@ -293,6 +293,27 @@ exports.getActiveFeedbackForStudent = async (req, res) => {
 
       forms = broadened; // Replace with broadened result
     }    // Filter out orphaned forms (faculty deleted) or inactive faculty
+
+    // FINAL SAFETY FALLBACK: If still no forms, surface all active forms so students are never shown an empty list silently
+    if (forms.length === 0) {
+      console.log('🛡️ Final fallback engaged: returning all active forms (no section match).');
+      const safetyForms = await FeedbackForm.find({
+        status: 'active',
+        'schedule.openDate': { $lte: currentDate },
+        $or: [
+          { 'schedule.closeDate': { $exists: false } },
+          { 'schedule.closeDate': null },
+          { 'schedule.closeDate': { $gte: currentDate } }
+        ]
+      }).populate('facultyId', 'personalInfo.firstName personalInfo.lastName isActive academicInfo.facultyDepartment');
+      safetyForms.forEach(f => console.log(`  Safety fallback includes: ${f.title} sections=${JSON.stringify(f.targetSections)}`));
+      forms = safetyForms.map(f => {
+        // Mark for UI to optionally show a warning or badge
+        f._noSectionMatch = true;
+        return f;
+      });
+    }
+
     const validForms = forms.filter(f => {
       const hasFaculty = !!f.facultyId; // populated doc exists
       const isActiveFaculty = hasFaculty ? (f.facultyId.isActive !== false) : false;
@@ -326,6 +347,16 @@ exports.getActiveFeedbackForStudent = async (req, res) => {
       ...form.toObject(),
       submitted: submittedFormIds.includes(form._id.toString())
     }));
+
+    // Preserve safety flag if present
+    formsWithStatus.forEach(f => {
+      if (f._noSectionMatch) {
+        f.sectionMatch = false;
+        delete f._noSectionMatch;
+      } else {
+        f.sectionMatch = true;
+      }
+    });
 
     res.json(formsWithStatus);
   } catch (error) {

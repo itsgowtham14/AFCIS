@@ -30,6 +30,12 @@ export default function ActiveFeedback() {
       const data = await feedbackService.getActiveFeedback();
       console.log('Active Feedback Forms:', data);
       setFeedbackForms(data || []);
+      if (Array.isArray(data)) {
+        const noMatch = data.filter(f => f && f.sectionMatch === false);
+        if (noMatch.length > 0) {
+          console.warn('⚠️ Some forms returned via safety fallback (no section match):', noMatch.map(f => f.title));
+        }
+      }
       setError(null);
     } catch (err) {
       console.error('Error loading feedback:', err);
@@ -113,6 +119,12 @@ export default function ActiveFeedback() {
                   {form.description && (
                     <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
                       {form.description}
+                    </Typography>
+                  )}
+
+                  {form.sectionMatch === false && (
+                    <Typography variant="caption" sx={{ color: '#d32f2f', display: 'block', mb: 1 }}>
+                      (Diagnostic: Section fallback – not directly targeted to your section)
                     </Typography>
                   )}
 
