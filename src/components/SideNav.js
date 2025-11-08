@@ -28,18 +28,16 @@ export default function SideNav() {
         { text: 'Pending Feedback', icon: <Assignment />, path: '/student/pending' },
         { text: 'Feedback History', icon: <History />, path: '/student/history' },
         { text: 'My Impact', icon: <Assessment />, path: '/student/impact' },
-        { text: 'Enrolled Courses', icon: <School />, path: '/student/courses' },
       ],
       faculty: [
         { text: 'Dashboard', icon: <Home />, path: '/faculty' },
+        { text: 'Manage Forms', icon: <Assignment />, path: '/faculty?view=forms' },
         { text: 'My Courses', icon: <School />, path: '/faculty/courses' },
         { text: 'Create Form', icon: <AddCircle />, path: '/faculty/create' },
         { text: 'View Analytics', icon: <Assessment />, path: '/faculty/analytics' },
       ],
       department_admin: [
         { text: 'Dashboard', icon: <Dashboard />, path: '/department' },
-        { text: 'Course Performance', icon: <BarChart />, path: '/department/courses' },
-        { text: 'Faculty Analytics', icon: <Analytics />, path: '/department/faculty' },
       ],
       system_admin: [
         { text: 'Dashboard', icon: <Home />, path: '/admin' },
@@ -89,10 +87,10 @@ export default function SideNav() {
           <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
             <ListItemButton
               onClick={() => handleNavigation(item.path)}
-              selected={location.pathname === item.path}
+              selected={location.pathname + location.search === item.path}
               sx={{
                 borderRadius: 2,
-                backgroundColor: location.pathname === item.path ? 'rgba(255,255,255,0.2)' : 'transparent',
+                backgroundColor: location.pathname + location.search === item.path ? 'rgba(255,255,255,0.2)' : 'transparent',
                 '&:hover': {
                   backgroundColor: 'rgba(255,255,255,0.15)',
                   transform: 'translateX(5px)',
@@ -112,7 +110,7 @@ export default function SideNav() {
               <ListItemText 
                 primary={item.text} 
                 primaryTypographyProps={{ 
-                  fontWeight: location.pathname === item.path ? 'bold' : 'normal' 
+                  fontWeight: location.pathname + location.search === item.path ? 'bold' : 'normal' 
                 }} 
               />
             </ListItemButton>

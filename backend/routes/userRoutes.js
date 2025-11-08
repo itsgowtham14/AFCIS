@@ -11,7 +11,8 @@ const {
   bulkCreateFaculty,
   bulkCreateDeptAdmin,
   getFacultyCourseInfo,
-  fixFacultySections
+  fixFacultySections,
+  fixStudentSections
 } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -20,8 +21,9 @@ router.post('/bulk-students', protect, authorize('system_admin'), bulkCreateStud
 router.post('/bulk-faculty', protect, authorize('system_admin'), bulkCreateFaculty);
 router.post('/bulk-deptadmin', protect, authorize('system_admin'), bulkCreateDeptAdmin);
 
-// Migration helper to fix comma-separated sections
+// Migration helpers to fix sections
 router.post('/fix-faculty-sections', protect, authorize('system_admin'), fixFacultySections);
+router.post('/fix-student-sections', protect, authorize('system_admin'), fixStudentSections);
 
 router.route('/')
   .get(protect, authorize('system_admin', 'department_admin'), getUsers)

@@ -41,7 +41,6 @@ export default function App() {
           <Route path="/student" element={<Protected allowedRoles={["student"]}><StudentDashboard /></Protected>} />
           <Route path="/student/pending" element={<Protected allowedRoles={["student"]}><ActiveFeedback /></Protected>} />
           <Route path="/student/impact" element={<Protected allowedRoles={["student"]}><StudentDashboard view="impact" /></Protected>} />
-          <Route path="/student/courses" element={<Protected allowedRoles={["student"]}><StudentDashboard view="courses" /></Protected>} />
           <Route path="/student/active" element={<Protected allowedRoles={["student"]}><ActiveFeedback /></Protected>} />
           <Route path="/student/feedback/:id" element={<Protected allowedRoles={["student"]}><FeedbackForm /></Protected>} />
           <Route path="/student/history" element={<Protected allowedRoles={["student"]}><FeedbackHistory /></Protected>} />
@@ -53,8 +52,6 @@ export default function App() {
           <Route path="/faculty/responses/:id" element={<Protected allowedRoles={["faculty","department_admin","system_admin"]}><FacultyResponses /></Protected>} />
 
           <Route path="/department" element={<Protected allowedRoles={["department_admin"]}><DepartmentDashboard /></Protected>} />
-          <Route path="/department/courses" element={<Protected allowedRoles={["department_admin"]}><DepartmentDashboard view="courses" /></Protected>} />
-          <Route path="/department/faculty" element={<Protected allowedRoles={["department_admin"]}><DepartmentDashboard view="faculty" /></Protected>} />
 
           <Route path="/admin" element={<Protected allowedRoles={["system_admin"]}><AdminDashboard /></Protected>} />
           <Route path="/admin/overview" element={<Protected allowedRoles={["system_admin"]}><AdminDashboard view="overview" /></Protected>} />

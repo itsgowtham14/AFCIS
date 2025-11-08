@@ -49,15 +49,9 @@ export default function StudentDashboard({ view = 'default' }) {
         }
       }
       
-      // Calculate stats
-      const pending = forms ? forms.filter(f => !f.submitted).length : 0;
-      const submitted = forms ? forms.filter(f => f.submitted).length : 0;
-      
-      setStats({
-        pending: pending,
-        submitted: submitted,
-        impactScore: submitted * 10 // Simple calculation
-      });
+      // Fetch student stats
+      const studentStats = await feedbackService.getStudentStats();
+      setStats(studentStats);
       
     } catch (err) {
       console.error('Error loading student data:', err);

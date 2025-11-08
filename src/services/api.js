@@ -274,6 +274,10 @@ export const feedbackService = {
     return await apiCall('/feedback/my-history');
   },
 
+  getStudentStats: async () => {
+    return await apiCall('/feedback/student-stats');
+  },
+
   // Faculty/Admin
   getFeedbackResponses: async (formId) => {
     return await apiCall(`/feedback/forms/${formId}/responses`);

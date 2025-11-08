@@ -202,7 +202,7 @@ export default function FacultyDashboard({ view: propView = 'default' }) {
             WebkitTextFillColor: 'transparent', 
             mb: 2 
           }}>
-            Welcome, {user?.personalInfo?.firstName || user?.name || 'Faculty'}!
+            Welcome, {`${user?.personalInfo?.title || ''} ${user?.personalInfo?.firstName || ''} ${user?.personalInfo?.lastName || ''}`.trim() || 'Faculty'}!
           </Typography>
           <Typography variant="h5" sx={{ color: '#666', mb: 4, fontWeight: 300 }}>
             Manage your courses and track student feedback effectively
@@ -457,14 +457,6 @@ export default function FacultyDashboard({ view: propView = 'default' }) {
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
                       <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={() => navigate(`/faculty/responses/${form._id}`)}
-                          title="View Responses"
-                        >
-                          <BarChart />
-                        </IconButton>
                         {canEditForm(form) && (
                           <IconButton
                             size="small"

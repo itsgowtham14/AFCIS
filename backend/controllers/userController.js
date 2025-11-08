@@ -218,14 +218,15 @@ exports.bulkCreateStudents = async (req, res) => {
 
     for (const data of studentsData) {
       try {
-        // Parse section (e.g., "1A" -> year: 1, section: A)
+        // Parse section (e.g., "1A" -> year: 1, section: 1A)
         const sectionMatch = data.section?.match(/^(\d)([A-D])$/i);
         if (!sectionMatch) {
           errors.push({ regId: data.regId, error: 'Invalid section format. Use format: 1A, 2B, 3C, 4D' });
           continue;
         }
         const year = parseInt(sectionMatch[1]);
-        const section = sectionMatch[2].toUpperCase();
+        // Store full section format (e.g., "1A") normalized to uppercase
+        const section = data.section.trim().toUpperCase();
 
         const userExists = await User.findOne({ 
           $or: [{ email: data.email }, { universityId: data.regId }] 
@@ -316,10 +317,10 @@ exports.bulkCreateFaculty = async (req, res) => {
             courses: data.courseName && data.section ? [{
               courseName: data.courseName,
               courseCode: data.courseCode || '',
-              // Split comma-separated sections into array
+              // Split comma-separated sections into array and normalize to uppercase
               sections: Array.isArray(data.section) 
-                ? data.section 
-                : data.section.split(',').map(s => s.trim())
+                ? data.section.map(s => String(s).trim().toUpperCase())
+                : data.section.split(',').map(s => s.trim().toUpperCase())
             }] : []
           }
         });
@@ -476,6 +477,52 @@ exports.fixFacultySections = async (req, res) => {
     res.json({
       message: `Fixed sections for ${updated} faculty members`,
       totalFaculty: faculty.length,
+      updated: updated
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Fix student sections (migration helper) - converts "A" to "1A", "B" to "1B" etc based on semester
+// @route   POST /api/users/fix-student-sections
+// @access  Private/Admin
+exports.fixStudentSections = async (req, res) => {
+  try {
+    const students = await User.find({ role: 'student' });
+    let updated = 0;
+
+    for (const student of students) {
+      let needsUpdate = false;
+      
+      if (student.academicInfo?.section) {
+        const currentSection = student.academicInfo.section;
+        
+        // If section is just a letter (A, B, C, D), prepend year based on semester
+        if (/^[A-D]$/i.test(currentSection)) {
+          const semester = student.academicInfo.semester || 1;
+          const year = Math.ceil(semester / 2); // Convert semester to year (1-2 -> 1, 3-4 -> 2, etc.)
+          student.academicInfo.section = `${year}${currentSection.toUpperCase()}`;
+          needsUpdate = true;
+        } else {
+          // Just normalize to uppercase if it's already in full format
+          const normalized = currentSection.trim().toUpperCase();
+          if (normalized !== currentSection) {
+            student.academicInfo.section = normalized;
+            needsUpdate = true;
+          }
+        }
+      }
+
+      if (needsUpdate) {
+        await student.save();
+        updated++;
+      }
+    }
+
+    res.json({
+      message: `Fixed sections for ${updated} students`,
+      totalStudents: students.length,
       updated: updated
     });
   } catch (error) {

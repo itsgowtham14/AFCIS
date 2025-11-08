@@ -13,7 +13,8 @@ const {
   getDepartmentAnalytics,
   getCourseAnalytics,
   getFacultyAnalytics,
-  getStudentFeedbackHistory
+  getStudentFeedbackHistory,
+  getStudentFeedbackStats
 } = require('../controllers/feedbackController');
 const {
   getFacultyFormAnalytics,
@@ -43,6 +44,7 @@ router.get('/department/faculty/:facultyId/analytics', protect, authorize('depar
 router.get('/active', protect, authorize('student'), getActiveFeedbackForStudent);
 router.post('/responses', protect, authorize('student'), submitFeedbackResponse);
 router.get('/my-history', protect, authorize('student'), getStudentFeedbackHistory);
+router.get('/student-stats', protect, authorize('student'), getStudentFeedbackStats);
 
 // Faculty analytics routes (aggregated data only)
 router.get('/faculty/:facultyId/forms/:formId/analytics', protect, authorize('faculty', 'department_admin', 'system_admin'), getFacultyFormAnalytics);
