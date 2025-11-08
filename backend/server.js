@@ -16,9 +16,17 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS middleware
+// CORS middleware - support comma-separated list in CLIENT_URL
+const clientUrls = (process.env.CLIENT_URL || 'http://localhost:3000').split(',').map(u => u.trim());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: function(origin, callback) {
+    // Allow non-browser requests (e.g., curl, server-to-server) where origin is undefined
+    if (!origin) return callback(null, true);
+    if (clientUrls.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
