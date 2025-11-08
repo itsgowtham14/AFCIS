@@ -125,13 +125,30 @@ exports.changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     const user = await User.findById(req.user._id);
 
-    if (user && (await user.matchPassword(currentPassword))) {
-      user.password = newPassword;
-      await user.save();
-      res.json({ message: 'Password updated successfully' });
-    } else {
-      res.status(401).json({ message: 'Current password is incorrect' });
+    // Prevent system/admin accounts from using this endpoint
+    if (user.role === 'system_admin') {
+      return res.status(403).json({ message: 'Password change via this endpoint is not allowed for system administrators' });
     }
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify current password
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Basic validation for new password length (schema enforces minlength:6)
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: 'Password updated successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
