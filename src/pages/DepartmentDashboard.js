@@ -291,11 +291,11 @@ export default function DepartmentDashboard() {
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3" sx={{ 
                   fontWeight: 'bold',
-                  color: getRatingColor(facultyAnalytics.overall.averageRating)
+                  color: getRatingColor(facultyAnalytics.overall?.averageRating)
                 }}>
-                  {facultyAnalytics.overall.averageRating.toFixed(2)}
+                  {facultyAnalytics.overall?.averageRating?.toFixed(2) || '0.00'}
                 </Typography>
-                {renderRatingStars(facultyAnalytics.overall.averageRating)}
+                {renderRatingStars(facultyAnalytics.overall?.averageRating || 0)}
                 <Typography variant="caption" color="text.secondary">
                   Overall Rating
                 </Typography>
@@ -306,7 +306,7 @@ export default function DepartmentDashboard() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#667eea' }}>
-                    {facultyAnalytics.overall.totalForms}
+                    {facultyAnalytics.overall?.totalForms || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Feedback Forms
@@ -316,7 +316,7 @@ export default function DepartmentDashboard() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#764ba2' }}>
-                    {facultyAnalytics.overall.totalResponses}
+                    {facultyAnalytics.overall?.totalResponses || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Student Responses
@@ -326,7 +326,7 @@ export default function DepartmentDashboard() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#f093fb' }}>
-                    {facultyAnalytics.overall.sectionsCount}
+                    {facultyAnalytics.overall?.sectionsCount || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Sections Taught
@@ -341,7 +341,7 @@ export default function DepartmentDashboard() {
           Section-wise Feedback Analysis
         </Typography>
 
-        {facultyAnalytics.sections.length === 0 ? (
+        {!facultyAnalytics.sections || facultyAnalytics.sections.length === 0 ? (
           <Alert severity="info">
             No feedback data available for this faculty member yet.
           </Alert>
@@ -526,11 +526,11 @@ export default function DepartmentDashboard() {
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3" sx={{ 
                   fontWeight: 'bold',
-                  color: getRatingColor(courseAnalytics.overall.averageRating)
+                  color: getRatingColor(courseAnalytics.overall?.averageRating)
                 }}>
-                  {courseAnalytics.overall.averageRating.toFixed(2)}
+                  {courseAnalytics.overall?.averageRating?.toFixed(2) || '0.00'}
                 </Typography>
-                {renderRatingStars(courseAnalytics.overall.averageRating)}
+                {renderRatingStars(courseAnalytics.overall?.averageRating || 0)}
                 <Typography variant="caption" color="text.secondary">
                   Overall Course Rating
                 </Typography>
@@ -541,7 +541,7 @@ export default function DepartmentDashboard() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#667eea' }}>
-                    {courseAnalytics.overall.totalForms}
+                    {courseAnalytics.overall?.totalForms || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Total Feedback Forms
@@ -551,7 +551,7 @@ export default function DepartmentDashboard() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#764ba2' }}>
-                    {courseAnalytics.overall.totalResponses}
+                    {courseAnalytics.overall?.totalResponses || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Student Responses
@@ -561,7 +561,7 @@ export default function DepartmentDashboard() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#f093fb' }}>
-                    {courseAnalytics.faculty.length}
+                    {courseAnalytics.faculty?.length || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Faculty Members
@@ -576,7 +576,7 @@ export default function DepartmentDashboard() {
               </Typography>
               <Box sx={{ height: 250 }}>
                 <Bar 
-                  data={createRatingDistributionChart(courseAnalytics.overall.ratingDistribution)} 
+                  data={createRatingDistributionChart(courseAnalytics.overall?.ratingDistribution || {})} 
                   options={chartOptions}
                 />
               </Box>
@@ -638,7 +638,7 @@ export default function DepartmentDashboard() {
                         width: 50, 
                         height: 50, 
                         mr: 2,
-                        bgcolor: getRatingColor(faculty.averageRating)
+                        bgcolor: getRatingColor(faculty.averageRating || 0)
                       }}>
                         <Person />
                       </Avatar>
@@ -655,11 +655,11 @@ export default function DepartmentDashboard() {
                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                       <Typography variant="h4" sx={{ 
                         fontWeight: 'bold',
-                        color: getRatingColor(faculty.averageRating)
+                        color: getRatingColor(faculty.averageRating || 0)
                       }}>
-                        {faculty.averageRating.toFixed(2)}
+                        {(faculty.averageRating || 0).toFixed(2)}
                       </Typography>
-                      {renderRatingStars(faculty.averageRating)}
+                      {renderRatingStars(faculty.averageRating || 0)}
                     </Box>
 
                     <Divider sx={{ my: 2 }} />
@@ -670,7 +670,7 @@ export default function DepartmentDashboard() {
                           Sections
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          {faculty.sections.length}
+                          {faculty.sections?.length || 0}
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
@@ -678,7 +678,7 @@ export default function DepartmentDashboard() {
                           Forms
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          {faculty.totalForms}
+                          {faculty.totalForms || 0}
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
@@ -686,14 +686,14 @@ export default function DepartmentDashboard() {
                           Responses
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          {faculty.totalResponses}
+                          {faculty.totalResponses || 0}
                         </Typography>
                       </Grid>
                     </Grid>
 
                     <Box sx={{ mt: 2 }}>
                       <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
-                        Sections: {faculty.sections.join(', ')}
+                        Sections: {faculty.sections?.join(', ') || 'N/A'}
                       </Typography>
                     </Box>
                   </CardContent>

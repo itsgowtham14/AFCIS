@@ -1113,20 +1113,24 @@ exports.getFacultyFormAnalytics = async (req, res) => {
     console.log('  Form Questions:', form.questions.length);
     form.questions.forEach((question, qIndex) => {
       console.log(`  Question ${qIndex + 1}:`, {
-        questionId: question.questionId,
-        _id: question._id,
+        questionId: question.questionId?.toString(),
+        _id: question._id?.toString(),
         type: question.type,
-        text: question.questionText
+        text: question.questionText?.substring(0, 50)
       });
     });
 
     console.log('  Sample Response Structure:');
     if (filteredResponses.length > 0) {
-      console.log('  Response IDs:', filteredResponses[0].responses.map(r => ({
+      const firstResponse = filteredResponses[0];
+      console.log('  First Response ID:', firstResponse._id);
+      console.log('  Response answers:', firstResponse.responses.map(r => ({
         questionId: r.questionId?.toString(),
         type: r.type,
         rating: r.rating,
-        answer: r.answer
+        answer: r.answer,
+        textResponse: r.textResponse,
+        selectedOption: r.selectedOption
       })));
     }
 
@@ -1140,8 +1144,8 @@ exports.getFacultyFormAnalytics = async (req, res) => {
         _id: questionSubdocIdStr
       });
       
-      // Match responses using either questionId or _id
-      const questionResponses = filteredResponses
+      // Try to match responses using either questionId or _id
+      let questionResponses = filteredResponses
         .map(r => r.responses.find(resp => {
           if (!resp.questionId) return false;
           const respIdStr = resp.questionId.toString();
@@ -1149,7 +1153,18 @@ exports.getFacultyFormAnalytics = async (req, res) => {
         }))
         .filter(Boolean);
 
-      console.log(`    Found ${questionResponses.length} responses for this question`);
+      console.log(`    Found ${questionResponses.length} responses by ID matching`);
+
+      // FALLBACK: If no responses found by ID matching, try matching by index
+      if (questionResponses.length === 0) {
+        console.log(`    Trying fallback: matching by question index ${qIndex}`);
+        questionResponses = filteredResponses
+          .map(r => r.responses[qIndex])
+          .filter(Boolean);
+        console.log(`    Found ${questionResponses.length} responses by index matching`);
+      }
+
+      console.log(`    Final count: ${questionResponses.length} responses for this question`);
 
       if (question.type === 'rating') {
         const ratings = questionResponses
@@ -1223,6 +1238,9 @@ exports.getFacultyFormAnalytics = async (req, res) => {
       ? parseFloat((allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length).toFixed(2))
       : 0;
 
+    // Calculate total students for response rate
+    let totalStudents = 0;
+    
     // Get section info if filtering by section
     let sectionInfo = null;
     if (section) {
@@ -1234,12 +1252,25 @@ exports.getFacultyFormAnalytics = async (req, res) => {
         totalStudents: uniqueStudentIds.length,
         responsesCount: filteredResponses.length
       };
+      totalStudents = uniqueStudentIds.length;
       
       console.log('  Section Info:', sectionInfo);
+    } else {
+      // If no section filter, try to get total from target sections
+      // Count unique students across all responses
+      const uniqueStudentIds = [...new Set(filteredResponses.map(r => r.studentId?._id?.toString() || r.studentId?.toString()).filter(Boolean))];
+      totalStudents = uniqueStudentIds.length;
     }
 
+    const responseRate = totalStudents > 0 
+      ? parseFloat(((filteredResponses.length / totalStudents) * 100).toFixed(1))
+      : null;
+
     console.log('  Question Analysis Count:', questionAnalysis.length);
+    console.log('  All Ratings:', allRatings);
     console.log('  Overall Average Rating:', overallAvgRating);
+    console.log('  Total Students:', totalStudents);
+    console.log('  Response Rate:', responseRate);
 
     res.json({
       form: {
@@ -1255,13 +1286,14 @@ exports.getFacultyFormAnalytics = async (req, res) => {
       summary: {
         totalResponses: filteredResponses.length,
         overallAvgRating,
-        responseRate: sectionInfo && sectionInfo.totalStudents > 0 ? parseFloat(((filteredResponses.length / sectionInfo.totalStudents) * 100).toFixed(1)) : null
+        responseRate
       },
       questionAnalysis,
       // Privacy note
       privacyNote: 'Individual student responses are not visible to maintain privacy. Only aggregated data is shown.'
     });
   } catch (error) {
+    console.error('❌ Error in getFacultyFormAnalytics:', error);
     res.status(500).json({ message: error.message });
   }
 };

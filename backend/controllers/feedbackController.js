@@ -1356,38 +1356,31 @@ exports.getFacultyAnalytics = async (req, res) => {
 
     // Calculate overall stats
     let allRatings = [];
-    let questionAnalytics = [];
     
-    feedbackForms.forEach(form => {
-        form.questions.forEach(question => {
-            if (question.type === 'rating') {
-                const questionResponses = responses.filter(r => r.formId.toString() === form._id.toString());
-                const ratings = questionResponses.flatMap(r => r.responses)
-                    .filter(ans => ans.questionId.toString() === question._id.toString() && ans.rating)
-                    .map(ans => ans.rating);
-                
-                allRatings.push(...ratings);
-
-                const avgRating = ratings.length > 0 ? (ratings.reduce((s, r) => s + r, 0) / ratings.length) : 0;
-                
-                questionAnalytics.push({
-                    question: question.questionText,
-                    avgRating: avgRating,
-                    distribution: {
-                        1: ratings.filter(r => r === 1).length,
-                        2: ratings.filter(r => r === 2).length,
-                        3: ratings.filter(r => r === 3).length,
-                        4: ratings.filter(r => r === 4).length,
-                        5: ratings.filter(r => r === 5).length,
-                    }
-                });
-            }
-        });
+    // Extract all ratings from all responses
+    responses.forEach(response => {
+      response.responses.forEach(ans => {
+        if (ans.type === 'rating' || ans.rating) {
+          if (ans.rating && Number.isFinite(ans.rating) && ans.rating >= 1 && ans.rating <= 5) {
+            allRatings.push(ans.rating);
+          } else if (ans.answer && Number.isFinite(Number(ans.answer)) && Number(ans.answer) >= 1 && Number(ans.answer) <= 5) {
+            allRatings.push(Number(ans.answer));
+          }
+        }
+      });
     });
 
     const overallAvgRating = allRatings.length > 0
       ? (allRatings.reduce((a, b) => a + b, 0) / allRatings.length)
       : 0;
+
+    console.log('📊 Faculty Analytics Summary:');
+    console.log('  Faculty:', faculty.personalInfo?.firstName, faculty.personalInfo?.lastName);
+    console.log('  Total Forms:', feedbackForms.length);
+    console.log('  Total Responses:', responses.length);
+    console.log('  All Ratings Found:', allRatings);
+    console.log('  Overall Avg Rating:', overallAvgRating);
+    console.log('  Sections:', sectionAnalytics.length);
 
     res.json({
       faculty: {
@@ -1397,12 +1390,13 @@ exports.getFacultyAnalytics = async (req, res) => {
         designation: faculty.academicInfo?.designation || '',
         department: faculty.academicInfo?.facultyDepartment || ''
       },
-      summary: {
+      overall: {
+        totalForms: feedbackForms.length,
         totalResponses: responses.length,
-        overallAvgRating: parseFloat(overallAvgRating.toFixed(2)),
+        averageRating: parseFloat(overallAvgRating.toFixed(2)),
+        sectionsCount: sectionAnalytics.length
       },
-      questionAnalysis: questionAnalytics,
-      sections: sectionAnalytics // Keep section-specific data if needed elsewhere
+      sections: sectionAnalytics
     });
   } catch (error) {
     console.error('Faculty analytics error:', error);
