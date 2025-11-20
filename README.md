@@ -285,9 +285,9 @@ For issues or questions, check the console logs in:
 ---
 
 ## Team Members:
-**Akhil**
-**Gowtham**
-**Neerush**
+**Akhil,**
+**Gowtham,**
+**Neerush,**
 **Dhanush**
 
 ### VFSTR University, Vadlamudi.
