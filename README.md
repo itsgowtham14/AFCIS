@@ -1,6 +1,12 @@
-# Stack Hack - Academic Feedback System
+# Stack Hack - Academic Feedback System and Continuous Improvement System
 
 A comprehensive academic feedback management system with role-based access for Students, Faculty, Department Admins, and System Admins.
+
+## 🔐 Sample Login Credentials
+
+### System Admin
+- **Email:** admin@vignan.ac.in
+- **Password:** admin@123
 
 ## 🚀 Features
 
@@ -38,9 +44,6 @@ A comprehensive academic feedback management system with role-based access for S
 
 ### 1. Clone the Repository
 
-```bash
-cd "C:\Users\Sasikumari\Desktop\Stack Hack"
-```
 
 ### 2. Backend Setup
 
@@ -69,7 +72,6 @@ Open a new terminal:
 
 ```powershell
 # Navigate to root folder
-cd "C:\Users\Sasikumari\Desktop\Stack Hack"
 
 # Install frontend dependencies (if not already installed)
 npm install
@@ -85,20 +87,8 @@ The frontend will run on `http://localhost:3000`
 After running the seed script, use these credentials:
 
 ### System Admin
-- **Email:** admin@university.edu
-- **Password:** admin123
-
-### Department Admin (CS Department)
-- **Email:** dept.cs@university.edu
-- **Password:** dept123
-
-### Faculty
-- **Email:** john.smith@university.edu
-- **Password:** faculty123
-
-### Student
-- **Email:** alice.johnson@student.edu
-- **Password:** student123
+- **Email:** admin@vignan.ac.in
+- **Password:** admin@123
 
 ## 📁 Project Structure
 
@@ -294,4 +284,12 @@ For issues or questions, check the console logs in:
 
 ---
 
-**Built with:** React, Material-UI, Node.js, Express, MongoDB, JWT
+## Team Members:
+**Akhil**
+**Gowtham**
+**Neerush**
+**Dhanush**
+
+### VFSTR University, Vadlamudi.
+
+## Contact - 231fa04094@vignan.ac.in for any queries & support.
