@@ -284,6 +284,37 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
+
+        {/* GitHub Repository Link */}
+        <Box sx={{ 
+          mt: 3, 
+          p: 2.5, 
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: 3,
+          boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+          textAlign: 'center',
+        }}>
+          <Typography variant="body1" sx={{ mb: 1, color: '#333', fontWeight: 500 }}>
+            For more details and to know how to use, test credentials - 
+          </Typography>
+          <Link 
+            href="https://github.com/itsgowtham14/AFCIS" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            sx={{ 
+              color: '#667eea',
+              fontWeight: 'bold',
+              textDecoration: 'none',
+              fontSize: '1rem',
+              '&:hover': { 
+                textDecoration: 'underline',
+                color: '#764ba2'
+              } 
+            }}
+          >
+            Open GitHub Repository
+          </Link>
+        </Box>
       </Container>
     </Box>
   );
